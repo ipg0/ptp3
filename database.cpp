@@ -20,7 +20,6 @@ void DatabaseNode::write(std::ostream &output) {
 
 size_t Database::update(DatabaseNode *&nodes) {
     file.open("database.bin", std::ios::in | std::ios::binary);
-    file.seekg(0, std::ios::beg);
     DatabaseNode buffer = DatabaseNode(file);
     nodes = nullptr;
     quantity = 0;
@@ -36,7 +35,6 @@ size_t Database::update(DatabaseNode *&nodes) {
 void Database::add(DatabaseNode &newNode) {
     ++quantity;
     file.open("database.bin", std::ios::in | std::ios::out | std::ios::binary);
-    file.seekg(0, std::ios::beg);
     DatabaseNode buffer = DatabaseNode(file);
     while(!file.eof() && buffer < newNode) {
         buffer = DatabaseNode(file);
@@ -74,5 +72,50 @@ void Database::remove(size_t index) {
     }
     file.close();
     std::filesystem::resize_file("database.bin", --quantity * sizeof(DatabaseNode));
-    // we need to truncate the file somehow
+}
+
+size_t Database::ratedWithinMargin(DatabaseNode *&nodes, char margin) {
+    file.open("database.bin", std::ios::in | std::ios::binary);
+    DatabaseNode buffer = DatabaseNode(file);
+    nodes = nullptr;
+    size_t localQuantity = 0;
+    while(!file.eof()) {
+        if(buffer.rating >= margin) {
+            nodes = reinterpret_cast<DatabaseNode *>(realloc(nodes, ++localQuantity * sizeof(DatabaseNode)));
+            nodes[localQuantity - 1] = buffer;
+            buffer = DatabaseNode(file);
+        }
+    }
+    file.close();
+    return localQuantity;
+}
+
+size_t Database::starring(DatabaseNode *&nodes, char *actor) {
+    file.open("database.bin", std::ios::in | std::ios::binary);
+    DatabaseNode buffer = DatabaseNode(file);
+    nodes = nullptr;
+    size_t localQuantity = 0;
+    while(!file.eof()) {
+        if(!strcmp(buffer.mainCharacter, actor)) {
+            nodes = reinterpret_cast<DatabaseNode *>(realloc(nodes, ++localQuantity * sizeof(DatabaseNode)));
+            nodes[localQuantity - 1] = buffer;
+            buffer = DatabaseNode(file);
+        }
+    }
+    file.close();
+    return localQuantity;
+}
+
+DatabaseNode Database::leastPopular() {
+    file.open("database.bin", std::ios::in | std::ios::binary);
+    DatabaseNode buffer = DatabaseNode(file);
+    DatabaseNode currentLeastRated = buffer; 
+    while(!file.eof()) {
+        if(buffer.rating < currentLeastRated.rating) {
+            currentLeastRated = buffer;
+        }
+        buffer = DatabaseNode(file);
+    }
+    file.close();
+    return currentLeastRated;
 }
