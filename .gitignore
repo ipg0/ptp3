@@ -1,0 +1,6 @@
+.deprecate/*
+.vscode/*
+database.h
+database.bin
+test
+test.cpp
