@@ -1,14 +1,13 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "tableoutput.h"
+#include "ui_tableoutput.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow) {
+TableOutput::TableOutput(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::TableOutput) {
     ui->setupUi(this);
-    database = new Database;
-    addDialog = new AddDialog(this, database);
-    tableOutput = new TableOutput(this);
-    connect(addDialog, &AddDialog::updateCallback, this, &MainWindow::onUpdateCallback);
+}
+
+void TableOutput::showTable(DatabaseNode *nodes, size_t quantity) {
     ui->tableWidget->setColumnCount(5);
     ui->tableWidget->setRowCount(1);
     ui->tableWidget->setItem(0, 0, new QTableWidgetItem("Name"));
@@ -16,31 +15,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->setItem(0, 2, new QTableWidgetItem("Genre"));
     ui->tableWidget->setItem(0, 3, new QTableWidgetItem("Main Actor"));
     ui->tableWidget->setItem(0, 4, new QTableWidgetItem("Rating"));
-    redrawTable();
-}
-
-MainWindow::~MainWindow() {
-    delete ui;
-    delete database;
-    delete addDialog;
-}
-
-void MainWindow::on_pushButton_clicked() {
-    addDialog->open();
-}
-
-void MainWindow::on_pushButton_2_clicked() {
-    database->remove(ui->tableWidget->selectedItems().back()->row() - 1);
-    redrawTable();
-}
-
-void MainWindow::onUpdateCallback() {
-    redrawTable();
-}
-
-void MainWindow::redrawTable() {
-    DatabaseNode *nodes = nullptr;
-    size_t quantity = database->update(nodes);
     ui->tableWidget->setRowCount(quantity + 1);
     for(size_t i = 0; i < quantity; i++) {
         ui->tableWidget->setItem(i + 1, 0,
@@ -54,10 +28,9 @@ void MainWindow::redrawTable() {
         ui->tableWidget->setItem(i + 1, 4,
                                  new QTableWidgetItem(QString::number(nodes[i].rating)));
     }
+    show();
 }
 
-void MainWindow::on_pushButton_3_clicked() {
-    DatabaseNode *nodes = nullptr;
-    size_t quantity = database->ratedWithinMargin(nodes, ui->lineEdit->text().toInt());
-    tableOutput->showTable(nodes, quantity);
+TableOutput::~TableOutput() {
+    delete ui;
 }

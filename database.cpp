@@ -1,6 +1,5 @@
 #include "database.h"
 #include <filesystem>
-#include <iostream> // debug
 
 DatabaseNode::DatabaseNode(char *_name, size_t _year, char *_genre, char *_mainCharacter, char _rating) {
     strcpy(name, _name);
@@ -12,6 +11,19 @@ DatabaseNode::DatabaseNode(char *_name, size_t _year, char *_genre, char *_mainC
 
 DatabaseNode::DatabaseNode(std::istream &input) {
     input.read(reinterpret_cast<char *>(this), sizeof(DatabaseNode));
+}
+
+DatabaseNode::DatabaseNode(DatabaseNode &_node) {
+    strcpy(name, _node.name);
+    strcpy(genre, _node.genre);
+    strcpy(mainCharacter, _node.mainCharacter);
+    year = _node.year;
+    rating = _node.rating;
+}
+
+Database::Database() {
+    file.open("database.bin", std::ios::out);
+    file.close();
 }
 
 void DatabaseNode::write(std::ostream &output) {
@@ -32,24 +44,48 @@ size_t Database::update(DatabaseNode *&nodes) {
     return quantity;
 }
 
-void Database::add(DatabaseNode &newNode) {
+                            ////////////////        ////////////////        ////          //////          ////////////////      ////
+                            ////                    ////                    ////        ////////        ////                    ////
+                            ////                    ////                    ////      ////  ////        ////                    ////      
+                            ////////////            //////////////          ////    ////    ////        ////                    //////////////    
+                            ////                    ////        ////        ////  ////      ////        ////                    ////        ////
+                            ////                    ////        ////        ////////        ////        ////                    ////        ////           
+                            ////////////////        //////////////          //////          ////          //////////////        //////////////  
+
+
+
+                                                        ////////            ////            ////            ////////        
+                                                      ////    ////          ////            ////          ////    ////      
+                                                    ////        ////        ////            ////        ////        ////    
+                                                    ////        ////        ////////////////////        ////        ////    
+                                                    ////        ////        ////            ////        ////        ////    
+                                                      ////    ////          ////            ////          ////    ////      
+                                                        ////////            ////            ////            ////////        
+                                                 
+
+                                                                                                          ////    ////
+
+                            ////        ////            ////////            ////            ////        ////////////////        //////        //////
+                            ////    ////              ////    ////          ////            ////        ////                    ////////    ////////
+                            ////////                ////        ////        ////            ////        ////                    ////  ////////  ////
+                            ////                    ////        ////        ////////////////////        ////////////            ////    ////    ////
+                            ////////                ////        ////        ////            ////        ////                    ////            ////
+                            ////    ////              ////    ////          ////            ////        ////                    ////            ////
+                            ////        ////            ////////            ////            ////        ////////////////        ////            ////
+
+void Database::add(DatabaseNode newNode) {
     ++quantity;
     file.open("database.bin", std::ios::in | std::ios::out | std::ios::binary);
     DatabaseNode buffer = DatabaseNode(file);
     while(!file.eof() && buffer < newNode) {
         buffer = DatabaseNode(file);
-        std::cout << "Searching: " << file.tellg() / sizeof(DatabaseNode) << '\n';
     }
     buffer = newNode;
     if(!file.eof()) {
-        std::cout << "Sanity check: " << file.tellg() / sizeof(DatabaseNode) << '\n';
         file.seekg(-sizeof(DatabaseNode), std::ios::cur);
-        std::cout << "Initiating: " << static_cast<size_t>(file.tellg()) / sizeof(DatabaseNode) << '\n'; // debug
         while(!file.eof()) {
-            std::cout << "Caching: " << file.tellg() / sizeof(DatabaseNode) << '\n';
             DatabaseNode temp = DatabaseNode(file);
             file.seekp(-sizeof(DatabaseNode), std::ios::cur);
-            std::cout << "Writing: " << file.tellp() / sizeof(DatabaseNode) << '\n';
             buffer.write(file);
             buffer = temp;
         }
@@ -83,8 +119,8 @@ size_t Database::ratedWithinMargin(DatabaseNode *&nodes, char margin) {
         if(buffer.rating >= margin) {
             nodes = reinterpret_cast<DatabaseNode *>(realloc(nodes, ++localQuantity * sizeof(DatabaseNode)));
             nodes[localQuantity - 1] = buffer;
-            buffer = DatabaseNode(file);
         }
+        buffer = DatabaseNode(file);
     }
     file.close();
     return localQuantity;
