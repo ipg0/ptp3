@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->setItem(0, 2, new QTableWidgetItem("Genre"));
     ui->tableWidget->setItem(0, 3, new QTableWidgetItem("Main Actor"));
     ui->tableWidget->setItem(0, 4, new QTableWidgetItem("Rating"));
+    ui->lineEdit->setValidator(new QIntValidator(this));
     redrawTable();
 }
 
