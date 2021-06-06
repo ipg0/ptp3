@@ -24,7 +24,7 @@ void TableOutput::showTable(DatabaseNode *nodes, size_t quantity) {
         ui->tableWidget->setItem(i + 1, 2,
                                  new QTableWidgetItem(QString::fromLocal8Bit(nodes[i].genre, strlen(nodes[i].genre))));
         ui->tableWidget->setItem(i + 1, 3,
-                                 new QTableWidgetItem(QString::fromLocal8Bit(nodes[i].mainCharacter, strlen(nodes[i].mainCharacter))));
+                                 new QTableWidgetItem(QString::fromLocal8Bit(nodes[i].mainActor, strlen(nodes[i].mainActor))));
         ui->tableWidget->setItem(i + 1, 4,
                                  new QTableWidgetItem(QString::number(nodes[i].rating)));
     }

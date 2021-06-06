@@ -53,7 +53,7 @@ void MainWindow::redrawTable() {
         ui->tableWidget->setItem(i + 1, 2,
                                  new QTableWidgetItem(QString::fromLocal8Bit(nodes[i].genre, strlen(nodes[i].genre))));
         ui->tableWidget->setItem(i + 1, 3,
-                                 new QTableWidgetItem(QString::fromLocal8Bit(nodes[i].mainCharacter, strlen(nodes[i].mainCharacter))));
+                                 new QTableWidgetItem(QString::fromLocal8Bit(nodes[i].mainActor, strlen(nodes[i].mainActor))));
         ui->tableWidget->setItem(i + 1, 4,
                                  new QTableWidgetItem(QString::number(nodes[i].rating)));
         if(leastRated.rating > nodes[i].rating)
@@ -64,7 +64,7 @@ void MainWindow::redrawTable() {
 
 void MainWindow::on_pushButton_3_clicked() {
     DatabaseNode *nodes = nullptr;
-    size_t quantity = database->filter(nodes, ui->lineEdit->text().toLocal8Bit().data(), ui->lineEdit_2->text().toInt(), FilterOption::genreFilter);
+    size_t quantity = database->filter(nodes, ui->lineEdit_2->text().toLocal8Bit().data(), ui->lineEdit->text().toInt(), FilterOption::genreFilter);
     tableOutput->showTable(nodes, quantity);
 }
 

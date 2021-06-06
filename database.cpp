@@ -1,10 +1,10 @@
 #include "database.h"
 #include <filesystem>
 
-DatabaseNode::DatabaseNode(char *_name, size_t _year, char *_genre, char *_mainCharacter, char _rating) {
+DatabaseNode::DatabaseNode(char *_name, size_t _year, char *_genre, char *_mainActor, char _rating) {
     strcpy(name, _name);
     strcpy(genre, _genre);
-    strcpy(mainCharacter, _mainCharacter);
+    strcpy(mainActor, _mainActor);
     year = _year;
     rating = _rating;
 }
@@ -16,7 +16,7 @@ DatabaseNode::DatabaseNode(std::istream &input) {
 DatabaseNode::DatabaseNode(DatabaseNode &other) {
     strcpy(name, other.name);
     strcpy(genre, other.genre);
-    strcpy(mainCharacter, other.mainCharacter);
+    strcpy(mainActor, other.mainActor);
     year = other.year;
     rating = other.rating;
 }
@@ -44,35 +44,6 @@ size_t Database::update(DatabaseNode *&nodes) {
     return quantity;
 }
 
-                            ////////////////        ////////////////        ////          //////          ////////////////      ////
-                            ////                    ////                    ////        ////////        ////                    ////
-                            ////                    ////                    ////      ////  ////        ////                    ////      
-                            ////////////            //////////////          ////    ////    ////        ////                    //////////////    
-                            ////                    ////        ////        ////  ////      ////        ////                    ////        ////
-                            ////                    ////        ////        ////////        ////        ////                    ////        ////           
-                            ////////////////        //////////////          //////          ////          //////////////        //////////////  
-
-
-
-                                                        ////////            ////            ////            ////////        
-                                                      ////    ////          ////            ////          ////    ////      
-                                                    ////        ////        ////            ////        ////        ////    
-                                                    ////        ////        ////////////////////        ////        ////    
-                                                    ////        ////        ////            ////        ////        ////    
-                                                      ////    ////          ////            ////          ////    ////      
-                                                        ////////            ////            ////            ////////        
-                                                 
-
-                                                                                                          ////    ////
-
-                            ////        ////            ////////            ////            ////        ////////////////        //////        //////
-                            ////    ////              ////    ////          ////            ////        ////                    ////////    ////////
-                            ////////                ////        ////        ////            ////        ////                    ////  ////////  ////
-                            ////                    ////        ////        ////////////////////        ////////////            ////    ////    ////
-                            ////////                ////        ////        ////            ////        ////                    ////            ////
-                            ////    ////              ////    ////          ////            ////        ////                    ////            ////
-                            ////        ////            ////////            ////            ////        ////////////////        ////            ////
-
 void Database::add(DatabaseNode newNode) {
     ++quantity;
     file.open("database.bin", std::ios::in | std::ios::out | std::ios::binary);
@@ -92,7 +63,6 @@ void Database::add(DatabaseNode newNode) {
     }
     file.clear();
     file.seekp(0, std::ios::end);
-    //std::cout << static_cast<size_t>(file.tellp()); // debug
     buffer.write(file);
     file.close();
 }
@@ -117,7 +87,7 @@ size_t Database::filter(DatabaseNode *&nodes, char *filter, char margin, FilterO
     size_t localQuantity = 0;
     while(!file.eof()) {
         if(((option == FilterOption::actorFilter
-                && strcmp(filter, buffer.mainCharacter) == 0)
+                && strcmp(filter, buffer.mainActor) == 0)
                 || (option == FilterOption::genreFilter
                 && strcmp(filter, buffer.genre) == 0))
                 && buffer.rating >= margin) {
@@ -136,7 +106,7 @@ size_t Database::starring(DatabaseNode *&nodes, char *actor) {
     nodes = nullptr;
     size_t localQuantity = 0;
     while(!file.eof()) {
-        if(!strcmp(buffer.mainCharacter, actor)) {
+        if(!strcmp(buffer.mainActor, actor)) {
             nodes = reinterpret_cast<DatabaseNode *>(realloc(nodes, ++localQuantity * sizeof(DatabaseNode)));
             nodes[localQuantity - 1] = buffer;
             buffer = DatabaseNode(file);
