@@ -13,17 +13,20 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     database.cpp \
+    plotter.cpp \
     tableoutput.cpp
 
 HEADERS += \
     adddialog.h \
     mainwindow.h \
     database.h \
+    plotter.h \
     tableoutput.h
 
 FORMS += \
     adddialog.ui \
     mainwindow.ui \
+    plotter.ui \
     tableoutput.ui
 
 # Default rules for deployment.

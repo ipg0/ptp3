@@ -13,16 +13,16 @@ DatabaseNode::DatabaseNode(std::istream &input) {
     input.read(reinterpret_cast<char *>(this), sizeof(DatabaseNode));
 }
 
-DatabaseNode::DatabaseNode(DatabaseNode &_node) {
-    strcpy(name, _node.name);
-    strcpy(genre, _node.genre);
-    strcpy(mainCharacter, _node.mainCharacter);
-    year = _node.year;
-    rating = _node.rating;
+DatabaseNode::DatabaseNode(DatabaseNode &other) {
+    strcpy(name, other.name);
+    strcpy(genre, other.genre);
+    strcpy(mainCharacter, other.mainCharacter);
+    year = other.year;
+    rating = other.rating;
 }
 
-Database::Database() {
-    file.open("database.bin", std::ios::out);
+Database::Database(char const *filename) {
+    file.open(filename, std::ios::in | std::ios::out);
     file.close();
 }
 
@@ -110,13 +110,17 @@ void Database::remove(size_t index) {
     std::filesystem::resize_file("database.bin", --quantity * sizeof(DatabaseNode));
 }
 
-size_t Database::ratedWithinMargin(DatabaseNode *&nodes, char margin) {
+size_t Database::filter(DatabaseNode *&nodes, char *filter, char margin, FilterOption option) {
     file.open("database.bin", std::ios::in | std::ios::binary);
     DatabaseNode buffer = DatabaseNode(file);
     nodes = nullptr;
     size_t localQuantity = 0;
     while(!file.eof()) {
-        if(buffer.rating >= margin) {
+        if(((option == FilterOption::actorFilter
+                && strcmp(filter, buffer.mainCharacter) == 0)
+                || (option == FilterOption::genreFilter
+                && strcmp(filter, buffer.genre) == 0))
+                && buffer.rating >= margin) {
             nodes = reinterpret_cast<DatabaseNode *>(realloc(nodes, ++localQuantity * sizeof(DatabaseNode)));
             nodes[localQuantity - 1] = buffer;
         }
@@ -125,7 +129,7 @@ size_t Database::ratedWithinMargin(DatabaseNode *&nodes, char margin) {
     file.close();
     return localQuantity;
 }
-
+/*
 size_t Database::starring(DatabaseNode *&nodes, char *actor) {
     file.open("database.bin", std::ios::in | std::ios::binary);
     DatabaseNode buffer = DatabaseNode(file);
@@ -140,7 +144,7 @@ size_t Database::starring(DatabaseNode *&nodes, char *actor) {
     }
     file.close();
     return localQuantity;
-}
+}*/
 
 DatabaseNode Database::leastPopular() {
     file.open("database.bin", std::ios::in | std::ios::binary);

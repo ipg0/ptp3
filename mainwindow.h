@@ -5,6 +5,7 @@
 #include "database.h"
 #include "adddialog.h"
 #include "tableoutput.h"
+#include "plotter.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,6 +27,10 @@ private slots:
 
     void on_pushButton_3_clicked();
 
+    void on_pushButton_10_clicked();
+
+    void on_pushButton_4_clicked();
+
 public slots:
     void onUpdateCallback();
 
@@ -34,6 +39,7 @@ private:
     Database *database;
     AddDialog *addDialog;
     TableOutput *tableOutput;
+    Plotter *plotter;
     void redrawTable();
 };
 #endif

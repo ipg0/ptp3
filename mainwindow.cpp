@@ -5,7 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    database = new Database;
+    database = new Database("data.bin");
     addDialog = new AddDialog(this, database);
     tableOutput = new TableOutput(this);
     connect(addDialog, &AddDialog::updateCallback, this, &MainWindow::onUpdateCallback);
@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->setItem(0, 3, new QTableWidgetItem("Main Actor"));
     ui->tableWidget->setItem(0, 4, new QTableWidgetItem("Rating"));
     ui->lineEdit->setValidator(new QIntValidator(this));
+    plotter = new Plotter;
     redrawTable();
 }
 
@@ -41,6 +42,7 @@ void MainWindow::onUpdateCallback() {
 
 void MainWindow::redrawTable() {
     DatabaseNode *nodes = nullptr;
+    DatabaseNode leastRated(const_cast<char *>(""), 0, const_cast<char *>("Unavailable"), const_cast<char *>(""), 127);
     size_t quantity = database->update(nodes);
     ui->tableWidget->setRowCount(quantity + 1);
     for(size_t i = 0; i < quantity; i++) {
@@ -54,11 +56,26 @@ void MainWindow::redrawTable() {
                                  new QTableWidgetItem(QString::fromLocal8Bit(nodes[i].mainCharacter, strlen(nodes[i].mainCharacter))));
         ui->tableWidget->setItem(i + 1, 4,
                                  new QTableWidgetItem(QString::number(nodes[i].rating)));
+        if(leastRated.rating > nodes[i].rating)
+            leastRated = nodes[i];
     }
+    ui->lineEdit_5->setText(QString::fromLocal8Bit(leastRated.genre, strlen(leastRated.genre)));
 }
 
 void MainWindow::on_pushButton_3_clicked() {
     DatabaseNode *nodes = nullptr;
-    size_t quantity = database->ratedWithinMargin(nodes, ui->lineEdit->text().toInt());
+    size_t quantity = database->filter(nodes, ui->lineEdit->text().toLocal8Bit().data(), ui->lineEdit_2->text().toInt(), FilterOption::genreFilter);
     tableOutput->showTable(nodes, quantity);
 }
+
+void MainWindow::on_pushButton_10_clicked() {
+    DatabaseNode *nodes = nullptr;
+    size_t quantity = database->filter(nodes, ui->lineEdit_4->text().toLocal8Bit().data());
+    tableOutput->showTable(nodes, quantity);
+}
+
+void MainWindow::on_pushButton_4_clicked() {
+    DatabaseNode *nodes = nullptr;
+    plotter->showGraph(nodes, database->update(nodes));
+}
+
