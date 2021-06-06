@@ -1,11 +1,14 @@
 #include "adddialog.h"
 #include "ui_adddialog.h"
+#include "QIntValidator"
 
 AddDialog::AddDialog(QWidget *parent, Database *_database) :
     QDialog(parent),
     ui(new Ui::AddDialog) {
     database = _database;
     ui->setupUi(this);
+    ui->lineEdit_2->setValidator(new QIntValidator(this));
+    ui->lineEdit_5->setValidator(new QIntValidator(this));
 }
 
 AddDialog::~AddDialog() {
@@ -20,6 +23,7 @@ void AddDialog::on_pushButton_2_clicked() {
                                ui->lineEdit_5->text().toShort()
                       ));
     emit(updateCallback());
+    close();
 }
 
 void AddDialog::on_pushButton_clicked() {

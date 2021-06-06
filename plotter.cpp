@@ -82,7 +82,7 @@ void Plotter::showGraph(DatabaseNode *nodes, size_t quantity) {
         text->setY(320);
     }
     // y aux lines and caps
-    for(size_t i = ymin; i < ymax; i++) {
+    for(size_t i = ymin; i <= ymax; i++) {
         scene->addLine(600, 310 - ((static_cast<double>(i) - ymin) / (ymax - ymin)) * 300,
                        40, 310 - ((static_cast<double>(i) - ymin) / (ymax - ymin)) * 300, pen);
         QGraphicsTextItem *text = scene->addText(QString::number(i));
