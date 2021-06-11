@@ -6,8 +6,6 @@
 
 #define STRSIZE 64
 
-typedef unsigned long size_t;
-
 enum class FilterOption {genreFilter, actorFilter};
 
 class DatabaseNode {
