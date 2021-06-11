@@ -124,11 +124,12 @@ DatabaseNode Database::leastPopular() {
     DatabaseNode buffer = DatabaseNode(file);
     DatabaseNode currentLeastRated = buffer; 
     while(!file.eof()) {
-        if(buffer.rating < currentLeastRated.rating) {
+        if(buffer.rating < currentLeastRated.rating)
             currentLeastRated = buffer;
-        }
         buffer = DatabaseNode(file);
     }
+    if(buffer.rating < currentLeastRated.rating)
+        currentLeastRated = buffer;
     file.close();
     return currentLeastRated;
 }
