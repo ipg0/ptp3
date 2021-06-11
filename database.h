@@ -24,6 +24,7 @@ class Database {
 private:
     std::fstream file;
     size_t quantity;
+    char filename[STRSIZE];
 public:
     Database(char const *filename);
     size_t update(DatabaseNode *&nodes);

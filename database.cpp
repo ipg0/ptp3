@@ -22,8 +22,11 @@ DatabaseNode::DatabaseNode(DatabaseNode &other) {
 }
 
 Database::Database(char const *filename) {
-    file.open(filename, std::ios::in | std::ios::out);
+    file.open(filename, std::ios::in | std::ios::binary);
+    if(!file.is_open())
+        file.open(filename, std::ios::out | std::ios::trunc | std::ios::binary);
     file.close();
+    strcpy(this->filename, filename);
 }
 
 void DatabaseNode::write(std::ostream &output) {
@@ -31,7 +34,7 @@ void DatabaseNode::write(std::ostream &output) {
 }
 
 size_t Database::update(DatabaseNode *&nodes) {
-    file.open("database.bin", std::ios::in | std::ios::binary);
+    file.open(filename, std::ios::in | std::ios::binary);
     DatabaseNode buffer = DatabaseNode(file);
     nodes = nullptr;
     quantity = 0;
@@ -46,7 +49,7 @@ size_t Database::update(DatabaseNode *&nodes) {
 
 void Database::add(DatabaseNode newNode) {
     ++quantity;
-    file.open("database.bin", std::ios::in | std::ios::out | std::ios::binary);
+    file.open(filename, std::ios::in | std::ios::out | std::ios::binary);
     DatabaseNode buffer = DatabaseNode(file);
     while(!file.eof() && buffer < newNode) {
         buffer = DatabaseNode(file);
@@ -68,7 +71,7 @@ void Database::add(DatabaseNode newNode) {
 }
 
 void Database::remove(size_t index) {
-    file.open("database.bin", std::ios::in | std::ios::out | std::ios::binary);
+    file.open(filename, std::ios::in | std::ios::out | std::ios::binary);
     file.seekg((index + 1) * sizeof(DatabaseNode), std::ios::beg);
     while(!file.eof()) { 
         DatabaseNode temp = DatabaseNode(file);
@@ -77,11 +80,11 @@ void Database::remove(size_t index) {
         file.seekp(sizeof(DatabaseNode), std::ios::cur);
     }
     file.close();
-    std::filesystem::resize_file("database.bin", --quantity * sizeof(DatabaseNode));
+    std::filesystem::resize_file(filename, --quantity * sizeof(DatabaseNode));
 }
 
 size_t Database::filter(DatabaseNode *&nodes, char *filter, char margin, FilterOption option) {
-    file.open("database.bin", std::ios::in | std::ios::binary);
+    file.open(filename, std::ios::in | std::ios::binary);
     DatabaseNode buffer = DatabaseNode(file);
     nodes = nullptr;
     size_t localQuantity = 0;
@@ -101,7 +104,7 @@ size_t Database::filter(DatabaseNode *&nodes, char *filter, char margin, FilterO
 }
 /*
 size_t Database::starring(DatabaseNode *&nodes, char *actor) {
-    file.open("database.bin", std::ios::in | std::ios::binary);
+    file.open(filename, std::ios::in | std::ios::binary);
     DatabaseNode buffer = DatabaseNode(file);
     nodes = nullptr;
     size_t localQuantity = 0;
@@ -117,7 +120,7 @@ size_t Database::starring(DatabaseNode *&nodes, char *actor) {
 }*/
 
 DatabaseNode Database::leastPopular() {
-    file.open("database.bin", std::ios::in | std::ios::binary);
+    file.open(filename, std::ios::in | std::ios::binary);
     DatabaseNode buffer = DatabaseNode(file);
     DatabaseNode currentLeastRated = buffer; 
     while(!file.eof()) {
