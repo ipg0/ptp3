@@ -41,6 +41,13 @@ void MainWindow::onUpdateCallback() {
 }
 
 void MainWindow::redrawTable() {
+    for(size_t i = 0; i < ui->tableWidget->rowCount(); i++) {
+        delete ui->tableWidget->item(i + 1, 0);
+        delete ui->tableWidget->item(i + 1, 1);
+        delete ui->tableWidget->item(i + 1, 2);
+        delete ui->tableWidget->item(i + 1, 3);
+        delete ui->tableWidget->item(i + 1, 4);
+    }
     DatabaseNode *nodes = nullptr;
     DatabaseNode leastRated(const_cast<char *>(""), 0, const_cast<char *>("Unavailable"), const_cast<char *>(""), 127);
     size_t quantity = database->update(nodes);

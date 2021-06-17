@@ -18,12 +18,11 @@ AddDialog::~AddDialog() {
 void AddDialog::on_pushButton_2_clicked() {
     database->add(DatabaseNode(ui->lineEdit->text().toLocal8Bit().data(),
                                ui->lineEdit_2->text().toLong(),
-                               ui->lineEdit_3->text().toLocal8Bit().data(),
                                ui->lineEdit_4->text().toLocal8Bit().data(),
+                               ui->lineEdit_3->text().toLocal8Bit().data(),
                                ui->lineEdit_5->text().toShort()
                       ));
     emit(updateCallback());
-    close();
 }
 
 void AddDialog::on_pushButton_clicked() {
